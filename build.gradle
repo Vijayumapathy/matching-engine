@@ -1,0 +1,66 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.4.4'
+	id 'io.spring.dependency-management' version '1.1.7'
+	id "com.github.vontikov.sbe-generator-plugin" version "0.0.9"
+}
+
+group = 'com.vijay'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(17)
+	}
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+sbeGenerator {
+	src {
+		dir = 'src/main/resources/schemas'
+		includes = ['schema.xml']
+	}
+	javaCodecsDir = 'src/generated/java'
+	javaOptions = [
+			'sbe.xinclude.aware': 'true',
+	]
+}
+
+sourceSets {
+	main {
+		java {
+			// default Gradle layout
+			srcDirs = ['src/main/java/']
+			// generated SBE stubs
+			srcDir 'src/generated/java'
+		}
+	}
+}
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter'
+	implementation 'io.aeron:aeron-all:1.46.6'
+	implementation 'org.agrona:agrona:1.23.0'
+	compileOnly 'org.projectlombok:lombok'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	testImplementation 'org.mockito:mockito-core'
+	testCompileOnly 'org.projectlombok:lombok:1.18.36'
+	testAnnotationProcessor 'org.projectlombok:lombok:1.18.36'
+	testImplementation 'org.awaitility:awaitility:4.2.2'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+defaultTasks 'clean', 'sbeGenerateJavaCodecs', 'jar'

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<sbe:messageSchema
+        xmlns:sbe="http://fixprotocol.io/2016/sbe"
+        xmlns:xi="http://www.w3.org/2001/XInclude"
+        package="com.vijay.matching"
+        id="1"
+        version="0"
+        semanticVersion="5.2"
+        description="Example schema"
+        byteOrder="littleEndian">
+
+    <types>
+        <type name="OrderId" primitiveType="int64"/>
+        <type name="Symbol" primitiveType="char" length="7" characterEncoding="ASCII"/>
+        <type name="Quantity" primitiveType="int64"/>
+        <type name="Price" primitiveType="float"/>
+        <enum name="Side" encodingType="char">
+            <validValue name="Buy">B</validValue>
+            <validValue name="Sell">S</validValue>
+        </enum>
+        <enum name="OrderType" encodingType="int32">
+            <validValue name="MKT">1</validValue>
+            <validValue name="LMT">2</validValue>
+            <validValue name="FOK">3</validValue>
+            <validValue name="IOC">4</validValue>
+        </enum>
+        <enum name="Boolean" encodingType="uint8" >
+            <validValue name="F">0</validValue>
+            <validValue name="T">1</validValue>
+        </enum>
+        <composite name="messageHeader" >
+            <type name="blockLength" primitiveType="uint16"/>
+            <type name="templateId" primitiveType="uint16"/>
+            <type name="schemaId" primitiveType="uint16"/>
+            <type name="version" primitiveType="uint16"/>
+        </composite>
+    </types>
+    <sbe:message name="OrderSubmit" id="1" >
+        <field name="id" id="1" type="OrderId"/>
+        <field name="symbol" id="2" type="Symbol"/>
+        <field name="side" id="3" type="Side"/>
+        <field name="qty" id="4" type="Quantity"/>
+        <field name="price" id="5" type="Price"/>
+        <field name="orderType" id="6" type="OrderType"/>
+    </sbe:message>
+    <sbe:message name="OrderCancel" id="2" >
+        <field name="id" id="1" type="OrderId"/>
+        <field name="originalId" id="2" type="OrderId"/>
+        <field name="symbol" id="3" type="Symbol"/>
+        <field name="side" id="4" type="Side"/>
+    </sbe:message>
+    <sbe:message name="Execution" id="3" >
+        <field name="execId" id="1" type="int64"/>
+        <field name="id" id="2" type="OrderId"/>
+        <field name="execQty" id="3" type="Quantity"/>
+        <field name="execPrice" id="4" type="Price"/>
+        <field name="ack" id="5" type="Boolean"/>
+    </sbe:message>
+</sbe:messageSchema>
