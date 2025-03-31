@@ -46,6 +46,8 @@ sourceSets {
 }
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0'
 	implementation 'io.aeron:aeron-all:1.46.6'
 	implementation 'org.agrona:agrona:1.23.0'
 	compileOnly 'org.projectlombok:lombok'
