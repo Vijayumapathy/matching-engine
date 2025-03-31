@@ -1,8 +1,6 @@
 package com.vijay.matching.clients;
 
-import com.vijay.matching.OrderSubmitEncoder;
-import com.vijay.matching.OrderType;
-import com.vijay.matching.Side;
+import com.vijay.matching.*;
 import com.vijay.matching.config.AeronPubSub;
 import com.vijay.matching.model.MsgTypes;
 import io.aeron.Aeron;
@@ -25,13 +23,14 @@ import java.util.concurrent.Executors;
 @Slf4j
 @Service
 @DependsOn("aeron")
-public class ClientOrderPublisher {
+public class ClientOrderPublisher implements IClientOrderPublisher {
 
     private ResourceLoader resourceLoader;
     private final Aeron aeron;
     private Publication orderPublication;
     private final UnsafeBuffer unsafeBuffer;
     private final OrderSubmitEncoder orderSubmitEncoder = new OrderSubmitEncoder();
+    private final OrderCancelEncoder orderCancelEncoder = new OrderCancelEncoder();
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
     private final String ordersFile;
 
@@ -43,6 +42,53 @@ public class ClientOrderPublisher {
         this.unsafeBuffer = new UnsafeBuffer(BufferUtil.allocateDirectAligned(124, 64));
         this.orderPublication = aeron.addPublication("aeron:ipc", AeronPubSub.ORDERS_CHANNEL);
 
+    }
+
+    @Override
+    public boolean submit(long clientOrderId, String symbol, String side,
+                          long qty, float price, int orderType) {
+        unsafeBuffer.putByte(0, MsgTypes.SUBMIT);
+        orderSubmitEncoder.wrap(unsafeBuffer, 1)
+                .id(clientOrderId)
+                .symbol(symbol)
+                .side(Side.get((byte)side.charAt(0)))
+                .qty(qty)
+                .price(price)
+                .orderType(OrderType.get(orderType));
+        long status;
+        do {
+            status = orderPublication.offer(unsafeBuffer, 0,
+                    orderSubmitEncoder.encodedLength() + 1);
+            if (status < 0) {
+                log.info("Message not published, retrying..." + status);
+                AeronPubSub.getIdleStrategy().idle();
+            }
+
+        } while (status < 0);
+        log.info("published order {}", clientOrderId);
+        return true;
+    }
+
+    @Override
+    public boolean cancel(long clientOrderId, long originalId, String symbol, String side) {
+        unsafeBuffer.putByte(0, MsgTypes.CANCEL);
+        orderCancelEncoder.wrap(unsafeBuffer, 1)
+                .id(clientOrderId)
+                .originalId(originalId)
+                .symbol(symbol)
+                .side(Side.get((byte)side.charAt(0)));
+        long status;
+        do {
+            status = orderPublication.offer(unsafeBuffer, 0,
+                    orderSubmitEncoder.encodedLength() + 1);
+            if (status < 0) {
+                log.info("Message not published, retrying..." + status);
+                AeronPubSub.getIdleStrategy().idle();
+            }
+
+        } while (status < 0);
+        log.info("published order {}", clientOrderId);
+        return true;
     }
 
     @PostConstruct
@@ -68,25 +114,10 @@ public class ClientOrderPublisher {
                         .skip(1)
                         .forEach(line -> {
                             String[] params = line.split(",");
-                            unsafeBuffer.putByte(0, MsgTypes.SUBMIT);
-                            orderSubmitEncoder.wrap(unsafeBuffer, 1)
-                                    .id(Integer.parseInt(params[0]))
-                                    .symbol(params[1])
-                                    .side(Side.get((byte)params[2].charAt(0)))
-                                    .qty(Integer.parseInt(params[3]))
-                                    .price(Float.parseFloat(params[4]))
-                                    .orderType(OrderType.get(Integer.parseInt(params[5])));
-                            long status;
-                            do {
-                                status = orderPublication.offer(unsafeBuffer, 0,
-                                        orderSubmitEncoder.encodedLength() + 1);
-                                if (status < 0) {
-                                    log.info("Message not published, retrying..." + status);
-                                    AeronPubSub.getIdleStrategy().idle();
-                                }
-
-                            } while (status < 0);
-                            log.info("published order {}", params[0]);
+                            submit(Integer.parseInt(params[0]), params[1],
+                                    params[2], Integer.parseInt(params[3]),
+                                    Float.parseFloat(params[4]),
+                                    Integer.parseInt(params[5]));
                             try {
                                 Thread.sleep(100);
                             } catch (InterruptedException e) {

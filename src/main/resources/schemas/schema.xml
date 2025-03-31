@@ -50,7 +50,7 @@
         <field name="side" id="4" type="Side"/>
     </sbe:message>
     <sbe:message name="Execution" id="3" >
-        <field name="execId" id="1" type="int64"/>
+        <field name="execId" id="1" type="OrderId"/>
         <field name="id" id="2" type="OrderId"/>
         <field name="execQty" id="3" type="Quantity"/>
         <field name="execPrice" id="4" type="Price"/>

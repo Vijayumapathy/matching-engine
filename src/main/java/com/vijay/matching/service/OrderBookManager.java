@@ -10,11 +10,13 @@ import java.util.stream.Stream;
 @Service
 public class OrderBookManager implements IOrderBookManager{
 
+    private final ExecutionsPublisher executionsPublisher;
     private final Map<String, OrderBook> orderBookMap = new ConcurrentHashMap<>();
 
-    public OrderBookManager() {
+    public OrderBookManager(ExecutionsPublisher executionsPublisher) {
+        this.executionsPublisher = executionsPublisher;
         Stream.of("EUR.USD", "USD.CAD").forEach(ccy -> {
-            orderBookMap.put(ccy, new OrderBook(ccy));
+            orderBookMap.put(ccy, new OrderBook(ccy, executionsPublisher));
         });
     }
 

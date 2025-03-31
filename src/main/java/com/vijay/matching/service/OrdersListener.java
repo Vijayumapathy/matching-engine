@@ -1,5 +1,6 @@
 package com.vijay.matching.service;
 
+import com.vijay.matching.ExecutionDecoder;
 import com.vijay.matching.Side;
 import com.vijay.matching.config.AeronPubSub;
 import com.vijay.matching.OrderCancelDecoder;
@@ -28,6 +29,7 @@ public class OrdersListener implements FragmentHandler {
     private final Subscription subscription;
     private final OrderSubmitDecoder orderSubmitDecoder = new OrderSubmitDecoder();
     private final OrderCancelDecoder orderCancelDecoder = new OrderCancelDecoder();
+    private final ExecutionDecoder executionDecoder = new ExecutionDecoder();
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
     private final OrderBookManager orderBookManager;
     private final AtomicLong eventId = new AtomicLong(10000);
@@ -75,7 +77,10 @@ public class OrdersListener implements FragmentHandler {
                         .symbol(orderCancelDecoder.symbol())
                         .isBuy(orderCancelDecoder.side() == Side.Buy));
             }
-            case MsgTypes.EXEC -> { }
+            case MsgTypes.EXEC -> {
+                executionDecoder.wrap(directBuffer, offset +1, length -1, 0);
+                log.info("received exec {}", executionDecoder);
+            }
             default -> {
                 log.error("Unknown msg received");
             }
