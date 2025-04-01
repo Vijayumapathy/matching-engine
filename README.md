@@ -1,6 +1,6 @@
 # Read Me First
-This is a simple aggregator/matching engine for FX. Unlike equities FX matching will be on more parameters.
-Although the design/data structures follows the equity model, the logic is customized for FX products.
+This is a simple aggregator/matching engine for FX. Unlike equities FX matching has more parameters involved.
+Although the design/data structures follows the equity model, the matching workflow is different for FX products.
 
 # Getting Started
 This is a basic spring boot project. Order publishers and aggregation/matching are from the same process.
