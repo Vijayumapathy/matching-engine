@@ -6,7 +6,7 @@ import org.agrona.MutableDirectBuffer;
 @SuppressWarnings("all")
 public final class OrderCancelEncoder
 {
-    public static final int BLOCK_LENGTH = 24;
+    public static final int BLOCK_LENGTH = 23;
     public static final int TEMPLATE_ID = 2;
     public static final int SCHEMA_ID = 1;
     public static final int SCHEMA_VERSION = 0;
@@ -214,7 +214,7 @@ public final class OrderCancelEncoder
 
     public static int symbolEncodingLength()
     {
-        return 7;
+        return 6;
     }
 
     public static String symbolMetaAttribute(final MetaAttribute metaAttribute)
@@ -244,13 +244,13 @@ public final class OrderCancelEncoder
 
     public static int symbolLength()
     {
-        return 7;
+        return 6;
     }
 
 
     public OrderCancelEncoder symbol(final int index, final byte value)
     {
-        if (index < 0 || index >= 7)
+        if (index < 0 || index >= 6)
         {
             throw new IndexOutOfBoundsException("index out of range: index=" + index);
         }
@@ -268,7 +268,7 @@ public final class OrderCancelEncoder
 
     public OrderCancelEncoder putSymbol(final byte[] src, final int srcOffset)
     {
-        final int length = 7;
+        final int length = 6;
         if (srcOffset < 0 || srcOffset > (src.length - length))
         {
             throw new IndexOutOfBoundsException("Copy will go out of range: offset=" + srcOffset);
@@ -281,7 +281,7 @@ public final class OrderCancelEncoder
 
     public OrderCancelEncoder symbol(final String src)
     {
-        final int length = 7;
+        final int length = 6;
         final int srcLength = null == src ? 0 : src.length();
         if (srcLength > length)
         {
@@ -300,7 +300,7 @@ public final class OrderCancelEncoder
 
     public OrderCancelEncoder symbol(final CharSequence src)
     {
-        final int length = 7;
+        final int length = 6;
         final int srcLength = null == src ? 0 : src.length();
         if (srcLength > length)
         {
@@ -329,7 +329,7 @@ public final class OrderCancelEncoder
 
     public static int sideEncodingOffset()
     {
-        return 23;
+        return 22;
     }
 
     public static int sideEncodingLength()
@@ -349,7 +349,7 @@ public final class OrderCancelEncoder
 
     public OrderCancelEncoder side(final Side value)
     {
-        buffer.putByte(offset + 23, value.value());
+        buffer.putByte(offset + 22, value.value());
         return this;
     }
 

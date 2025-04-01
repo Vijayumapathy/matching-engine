@@ -53,7 +53,7 @@ public class ClientExecListener implements FragmentHandler {
         switch (messageType) {
             case MsgTypes.EXEC -> {
                 executionDecoder.wrap(directBuffer, offset + 1, length - 1, 0);
-                log.info("received exec {} qty {}", executionDecoder.id(), executionDecoder.execQty());
+                log.info("received exec {} qty {}", executionDecoder.user(), executionDecoder.execQty());
             }
             case MsgTypes.AGG -> {
                 orderSubmitDecoder.wrap(directBuffer, offset + 1, length - 1, 0);

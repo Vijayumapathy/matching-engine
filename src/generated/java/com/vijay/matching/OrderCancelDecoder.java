@@ -6,7 +6,7 @@ import org.agrona.DirectBuffer;
 @SuppressWarnings("all")
 public final class OrderCancelDecoder
 {
-    public static final int BLOCK_LENGTH = 24;
+    public static final int BLOCK_LENGTH = 23;
     public static final int TEMPLATE_ID = 2;
     public static final int SCHEMA_ID = 1;
     public static final int SCHEMA_VERSION = 0;
@@ -247,7 +247,7 @@ public final class OrderCancelDecoder
 
     public static int symbolEncodingLength()
     {
-        return 7;
+        return 6;
     }
 
     public static String symbolMetaAttribute(final MetaAttribute metaAttribute)
@@ -277,13 +277,13 @@ public final class OrderCancelDecoder
 
     public static int symbolLength()
     {
-        return 7;
+        return 6;
     }
 
 
     public byte symbol(final int index)
     {
-        if (index < 0 || index >= 7)
+        if (index < 0 || index >= 6)
         {
             throw new IndexOutOfBoundsException("index out of range: index=" + index);
         }
@@ -301,7 +301,7 @@ public final class OrderCancelDecoder
 
     public int getSymbol(final byte[] dst, final int dstOffset)
     {
-        final int length = 7;
+        final int length = 6;
         if (dstOffset < 0 || dstOffset > (dst.length - length))
         {
             throw new IndexOutOfBoundsException("Copy will go out of range: offset=" + dstOffset);
@@ -314,11 +314,11 @@ public final class OrderCancelDecoder
 
     public String symbol()
     {
-        final byte[] dst = new byte[7];
-        buffer.getBytes(offset + 16, dst, 0, 7);
+        final byte[] dst = new byte[6];
+        buffer.getBytes(offset + 16, dst, 0, 6);
 
         int end = 0;
-        for (; end < 7 && dst[end] != 0; ++end);
+        for (; end < 6 && dst[end] != 0; ++end);
 
         return new String(dst, 0, end, java.nio.charset.StandardCharsets.US_ASCII);
     }
@@ -326,7 +326,7 @@ public final class OrderCancelDecoder
 
     public int getSymbol(final Appendable value)
     {
-        for (int i = 0; i < 7; ++i)
+        for (int i = 0; i < 6; ++i)
         {
             final int c = buffer.getByte(offset + 16 + i) & 0xFF;
             if (c == 0)
@@ -344,7 +344,7 @@ public final class OrderCancelDecoder
             }
         }
 
-        return 7;
+        return 6;
     }
 
 
@@ -360,7 +360,7 @@ public final class OrderCancelDecoder
 
     public static int sideEncodingOffset()
     {
-        return 23;
+        return 22;
     }
 
     public static int sideEncodingLength()
@@ -380,12 +380,12 @@ public final class OrderCancelDecoder
 
     public byte sideRaw()
     {
-        return buffer.getByte(offset + 23);
+        return buffer.getByte(offset + 22);
     }
 
     public Side side()
     {
-        return Side.get(buffer.getByte(offset + 23));
+        return Side.get(buffer.getByte(offset + 22));
     }
 
 

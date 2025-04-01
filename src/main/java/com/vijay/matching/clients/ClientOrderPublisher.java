@@ -31,6 +31,7 @@ public class ClientOrderPublisher implements IClientOrderPublisher {
     private final UnsafeBuffer unsafeBuffer;
     private final OrderSubmitEncoder orderSubmitEncoder = new OrderSubmitEncoder();
     private final OrderCancelEncoder orderCancelEncoder = new OrderCancelEncoder();
+    private final OrderMatchEncoder orderMatchEncoder = new OrderMatchEncoder();
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
     private final String ordersFile;
 
@@ -88,6 +89,26 @@ public class ClientOrderPublisher implements IClientOrderPublisher {
 
         } while (status < 0);
         log.info("published order {}", clientOrderId);
+        return true;
+    }
+
+    @Override
+    public boolean match(String userid, String symbol) {
+        unsafeBuffer.putByte(0, MsgTypes.MATCH);
+        orderMatchEncoder.wrap(unsafeBuffer, 1)
+                .user(userid)
+                .symbol(symbol);
+        long status;
+        do {
+            status = orderPublication.offer(unsafeBuffer, 0,
+                    orderMatchEncoder.encodedLength() + 1);
+            if (status < 0) {
+                log.info("Message not published, retrying..." + status);
+                AeronPubSub.getIdleStrategy().idle();
+            }
+
+        } while (status < 0);
+        log.info("published for match {}", userid);
         return true;
     }
 

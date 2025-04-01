@@ -30,4 +30,9 @@ public class OrderBookManager implements IOrderBookManager{
         return orderBookMap.get(order.symbol()).cancelOrder(order);
     }
 
+    @Override
+    public void match(String user, String symbol) {
+        orderBookMap.get(symbol).marketMatch(user);
+    }
+
 }

@@ -6,7 +6,7 @@ import org.agrona.DirectBuffer;
 @SuppressWarnings("all")
 public final class OrderSubmitDecoder
 {
-    public static final int BLOCK_LENGTH = 55;
+    public static final int BLOCK_LENGTH = 54;
     public static final int TEMPLATE_ID = 1;
     public static final int SCHEMA_ID = 1;
     public static final int SCHEMA_VERSION = 0;
@@ -196,7 +196,7 @@ public final class OrderSubmitDecoder
 
     public static int symbolEncodingLength()
     {
-        return 7;
+        return 6;
     }
 
     public static String symbolMetaAttribute(final MetaAttribute metaAttribute)
@@ -226,13 +226,13 @@ public final class OrderSubmitDecoder
 
     public static int symbolLength()
     {
-        return 7;
+        return 6;
     }
 
 
     public byte symbol(final int index)
     {
-        if (index < 0 || index >= 7)
+        if (index < 0 || index >= 6)
         {
             throw new IndexOutOfBoundsException("index out of range: index=" + index);
         }
@@ -250,7 +250,7 @@ public final class OrderSubmitDecoder
 
     public int getSymbol(final byte[] dst, final int dstOffset)
     {
-        final int length = 7;
+        final int length = 6;
         if (dstOffset < 0 || dstOffset > (dst.length - length))
         {
             throw new IndexOutOfBoundsException("Copy will go out of range: offset=" + dstOffset);
@@ -263,11 +263,11 @@ public final class OrderSubmitDecoder
 
     public String symbol()
     {
-        final byte[] dst = new byte[7];
-        buffer.getBytes(offset + 8, dst, 0, 7);
+        final byte[] dst = new byte[6];
+        buffer.getBytes(offset + 8, dst, 0, 6);
 
         int end = 0;
-        for (; end < 7 && dst[end] != 0; ++end);
+        for (; end < 6 && dst[end] != 0; ++end);
 
         return new String(dst, 0, end, java.nio.charset.StandardCharsets.US_ASCII);
     }
@@ -275,7 +275,7 @@ public final class OrderSubmitDecoder
 
     public int getSymbol(final Appendable value)
     {
-        for (int i = 0; i < 7; ++i)
+        for (int i = 0; i < 6; ++i)
         {
             final int c = buffer.getByte(offset + 8 + i) & 0xFF;
             if (c == 0)
@@ -293,7 +293,7 @@ public final class OrderSubmitDecoder
             }
         }
 
-        return 7;
+        return 6;
     }
 
 
@@ -309,7 +309,7 @@ public final class OrderSubmitDecoder
 
     public static int dealtCcyEncodingOffset()
     {
-        return 15;
+        return 14;
     }
 
     public static int dealtCcyEncodingLength()
@@ -355,7 +355,7 @@ public final class OrderSubmitDecoder
             throw new IndexOutOfBoundsException("index out of range: index=" + index);
         }
 
-        final int pos = offset + 15 + (index * 1);
+        final int pos = offset + 14 + (index * 1);
 
         return buffer.getByte(pos);
     }
@@ -374,7 +374,7 @@ public final class OrderSubmitDecoder
             throw new IndexOutOfBoundsException("Copy will go out of range: offset=" + dstOffset);
         }
 
-        buffer.getBytes(offset + 15, dst, dstOffset, length);
+        buffer.getBytes(offset + 14, dst, dstOffset, length);
 
         return length;
     }
@@ -382,7 +382,7 @@ public final class OrderSubmitDecoder
     public String dealtCcy()
     {
         final byte[] dst = new byte[3];
-        buffer.getBytes(offset + 15, dst, 0, 3);
+        buffer.getBytes(offset + 14, dst, 0, 3);
 
         int end = 0;
         for (; end < 3 && dst[end] != 0; ++end);
@@ -395,7 +395,7 @@ public final class OrderSubmitDecoder
     {
         for (int i = 0; i < 3; ++i)
         {
-            final int c = buffer.getByte(offset + 15 + i) & 0xFF;
+            final int c = buffer.getByte(offset + 14 + i) & 0xFF;
             if (c == 0)
             {
                 return i;
@@ -427,7 +427,7 @@ public final class OrderSubmitDecoder
 
     public static int sideEncodingOffset()
     {
-        return 18;
+        return 17;
     }
 
     public static int sideEncodingLength()
@@ -447,12 +447,12 @@ public final class OrderSubmitDecoder
 
     public byte sideRaw()
     {
-        return buffer.getByte(offset + 18);
+        return buffer.getByte(offset + 17);
     }
 
     public Side side()
     {
-        return Side.get(buffer.getByte(offset + 18));
+        return Side.get(buffer.getByte(offset + 17));
     }
 
 
@@ -468,7 +468,7 @@ public final class OrderSubmitDecoder
 
     public static int qtyEncodingOffset()
     {
-        return 19;
+        return 18;
     }
 
     public static int qtyEncodingLength()
@@ -503,7 +503,7 @@ public final class OrderSubmitDecoder
 
     public long qty()
     {
-        return buffer.getLong(offset + 19, BYTE_ORDER);
+        return buffer.getLong(offset + 18, BYTE_ORDER);
     }
 
 
@@ -519,7 +519,7 @@ public final class OrderSubmitDecoder
 
     public static int valueDateEncodingOffset()
     {
-        return 27;
+        return 26;
     }
 
     public static int valueDateEncodingLength()
@@ -565,7 +565,7 @@ public final class OrderSubmitDecoder
             throw new IndexOutOfBoundsException("index out of range: index=" + index);
         }
 
-        final int pos = offset + 27 + (index * 1);
+        final int pos = offset + 26 + (index * 1);
 
         return buffer.getByte(pos);
     }
@@ -584,7 +584,7 @@ public final class OrderSubmitDecoder
             throw new IndexOutOfBoundsException("Copy will go out of range: offset=" + dstOffset);
         }
 
-        buffer.getBytes(offset + 27, dst, dstOffset, length);
+        buffer.getBytes(offset + 26, dst, dstOffset, length);
 
         return length;
     }
@@ -592,7 +592,7 @@ public final class OrderSubmitDecoder
     public String valueDate()
     {
         final byte[] dst = new byte[8];
-        buffer.getBytes(offset + 27, dst, 0, 8);
+        buffer.getBytes(offset + 26, dst, 0, 8);
 
         int end = 0;
         for (; end < 8 && dst[end] != 0; ++end);
@@ -605,7 +605,7 @@ public final class OrderSubmitDecoder
     {
         for (int i = 0; i < 8; ++i)
         {
-            final int c = buffer.getByte(offset + 27 + i) & 0xFF;
+            final int c = buffer.getByte(offset + 26 + i) & 0xFF;
             if (c == 0)
             {
                 return i;
@@ -637,7 +637,7 @@ public final class OrderSubmitDecoder
 
     public static int userEncodingOffset()
     {
-        return 35;
+        return 34;
     }
 
     public static int userEncodingLength()
@@ -683,7 +683,7 @@ public final class OrderSubmitDecoder
             throw new IndexOutOfBoundsException("index out of range: index=" + index);
         }
 
-        final int pos = offset + 35 + (index * 1);
+        final int pos = offset + 34 + (index * 1);
 
         return buffer.getByte(pos);
     }
@@ -702,7 +702,7 @@ public final class OrderSubmitDecoder
             throw new IndexOutOfBoundsException("Copy will go out of range: offset=" + dstOffset);
         }
 
-        buffer.getBytes(offset + 35, dst, dstOffset, length);
+        buffer.getBytes(offset + 34, dst, dstOffset, length);
 
         return length;
     }
@@ -710,7 +710,7 @@ public final class OrderSubmitDecoder
     public String user()
     {
         final byte[] dst = new byte[20];
-        buffer.getBytes(offset + 35, dst, 0, 20);
+        buffer.getBytes(offset + 34, dst, 0, 20);
 
         int end = 0;
         for (; end < 20 && dst[end] != 0; ++end);
@@ -723,7 +723,7 @@ public final class OrderSubmitDecoder
     {
         for (int i = 0; i < 20; ++i)
         {
-            final int c = buffer.getByte(offset + 35 + i) & 0xFF;
+            final int c = buffer.getByte(offset + 34 + i) & 0xFF;
             if (c == 0)
             {
                 return i;

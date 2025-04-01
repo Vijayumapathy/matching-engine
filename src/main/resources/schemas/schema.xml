@@ -53,11 +53,18 @@
         <field name="symbol" id="3" type="Symbol"/>
         <field name="side" id="4" type="Side"/>
     </sbe:message>
-    <sbe:message name="Execution" id="3" >
+    <sbe:message name="OrderMatch" id="3" >
+        <field name="user" id="7" type="String20"/>
+        <field name="symbol" id="3" type="Symbol"/>
+    </sbe:message>
+    <sbe:message name="Execution" id="4" >
         <field name="execId" id="1" type="OrderId"/>
-        <field name="id" id="2" type="OrderId"/>
-        <field name="execQty" id="3" type="Quantity"/>
-        <field name="execPrice" id="4" type="Price"/>
-        <field name="ack" id="5" type="Boolean"/>
+        <field name="symbol" id="2" type="Symbol"/>
+        <field name="dealtCcy" id="3" type="Currency"/>
+        <field name="side" id="4" type="Side"/>
+        <field name="execQty" id="5" type="Quantity"/>
+        <field name="valueDate" id="6" type="Date"/>
+        <field name="user" id="7" type="String20"/>
+        <field name="matchPercentage" id="8" type="Price"/>
     </sbe:message>
 </sbe:messageSchema>

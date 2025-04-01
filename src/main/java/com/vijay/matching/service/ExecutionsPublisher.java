@@ -3,6 +3,7 @@ package com.vijay.matching.service;
 import com.vijay.matching.Boolean;
 import com.vijay.matching.ExecutionEncoder;
 import com.vijay.matching.OrderSubmitEncoder;
+import com.vijay.matching.Side;
 import com.vijay.matching.config.AeronPubSub;
 import com.vijay.matching.model.Execution;
 import com.vijay.matching.model.MsgTypes;
@@ -49,10 +50,14 @@ public class ExecutionsPublisher {
         executionList.forEach(execution -> {
             unsafeBuffer.putByte(0, MsgTypes.EXEC);
             executionEncoder.wrap(unsafeBuffer, 1)
-                    .id(execution.id())
-                    .execQty(execution.qty())
-                    .execPrice((float) execution.execPrice())
-                    .ack(execution.ack() ? Boolean.T : Boolean.F);
+                    .execId(execution.execId())
+                    .symbol(execution.symbol())
+                    .dealtCcy(execution.dealt())
+                    .side(execution.isBuy() ? Side.Buy: Side.Sell)
+                    .execQty(execution.execQty())
+                    .valueDate(execution.valueDate())
+                    .user(execution.user())
+                    .matchPercentage(execution.matchPercentage());
             long status;
             do {
                 status = execPublication.offer(unsafeBuffer, 0,
@@ -63,7 +68,7 @@ public class ExecutionsPublisher {
                 }
 
             } while (status < 0);
-            log.info("published exec {}", execution.id());
+            log.info("published exec {}", execution.execId());
         });
     }
 

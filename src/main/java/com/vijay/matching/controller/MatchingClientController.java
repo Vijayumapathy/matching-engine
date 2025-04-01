@@ -20,6 +20,11 @@ public class MatchingClientController {
         return orderPublisher.submit(clientOrderId, symbol, dealt, side, qty, valueDate, user);
     }
 
+    @GetMapping(value = "/match", produces = MediaType.TEXT_PLAIN_VALUE)
+    public boolean match(String user, String symbol) {
+        return orderPublisher.match(user, symbol);
+    }
+
     @GetMapping(value = "/cancelOrder", produces = MediaType.TEXT_PLAIN_VALUE)
     public boolean cancelOrder(long clientOrderId, long originalId, String symbol, String side) {
         return orderPublisher.cancel(clientOrderId, originalId, symbol, side);

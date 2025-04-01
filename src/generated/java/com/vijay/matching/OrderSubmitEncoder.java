@@ -6,7 +6,7 @@ import org.agrona.MutableDirectBuffer;
 @SuppressWarnings("all")
 public final class OrderSubmitEncoder
 {
-    public static final int BLOCK_LENGTH = 55;
+    public static final int BLOCK_LENGTH = 54;
     public static final int TEMPLATE_ID = 1;
     public static final int SCHEMA_ID = 1;
     public static final int SCHEMA_VERSION = 0;
@@ -162,7 +162,7 @@ public final class OrderSubmitEncoder
 
     public static int symbolEncodingLength()
     {
-        return 7;
+        return 6;
     }
 
     public static String symbolMetaAttribute(final MetaAttribute metaAttribute)
@@ -192,13 +192,13 @@ public final class OrderSubmitEncoder
 
     public static int symbolLength()
     {
-        return 7;
+        return 6;
     }
 
 
     public OrderSubmitEncoder symbol(final int index, final byte value)
     {
-        if (index < 0 || index >= 7)
+        if (index < 0 || index >= 6)
         {
             throw new IndexOutOfBoundsException("index out of range: index=" + index);
         }
@@ -216,7 +216,7 @@ public final class OrderSubmitEncoder
 
     public OrderSubmitEncoder putSymbol(final byte[] src, final int srcOffset)
     {
-        final int length = 7;
+        final int length = 6;
         if (srcOffset < 0 || srcOffset > (src.length - length))
         {
             throw new IndexOutOfBoundsException("Copy will go out of range: offset=" + srcOffset);
@@ -229,7 +229,7 @@ public final class OrderSubmitEncoder
 
     public OrderSubmitEncoder symbol(final String src)
     {
-        final int length = 7;
+        final int length = 6;
         final int srcLength = null == src ? 0 : src.length();
         if (srcLength > length)
         {
@@ -248,7 +248,7 @@ public final class OrderSubmitEncoder
 
     public OrderSubmitEncoder symbol(final CharSequence src)
     {
-        final int length = 7;
+        final int length = 6;
         final int srcLength = null == src ? 0 : src.length();
         if (srcLength > length)
         {
@@ -277,7 +277,7 @@ public final class OrderSubmitEncoder
 
     public static int dealtCcyEncodingOffset()
     {
-        return 15;
+        return 14;
     }
 
     public static int dealtCcyEncodingLength()
@@ -323,16 +323,16 @@ public final class OrderSubmitEncoder
             throw new IndexOutOfBoundsException("index out of range: index=" + index);
         }
 
-        final int pos = offset + 15 + (index * 1);
+        final int pos = offset + 14 + (index * 1);
         buffer.putByte(pos, value);
 
         return this;
     }
     public OrderSubmitEncoder putDealtCcy(final byte value0, final byte value1, final byte value2)
     {
-        buffer.putByte(offset + 15, value0);
-        buffer.putByte(offset + 16, value1);
-        buffer.putByte(offset + 17, value2);
+        buffer.putByte(offset + 14, value0);
+        buffer.putByte(offset + 15, value1);
+        buffer.putByte(offset + 16, value2);
 
         return this;
     }
@@ -350,7 +350,7 @@ public final class OrderSubmitEncoder
             throw new IndexOutOfBoundsException("Copy will go out of range: offset=" + srcOffset);
         }
 
-        buffer.putBytes(offset + 15, src, srcOffset, length);
+        buffer.putBytes(offset + 14, src, srcOffset, length);
 
         return this;
     }
@@ -364,11 +364,11 @@ public final class OrderSubmitEncoder
             throw new IndexOutOfBoundsException("String too large for copy: byte length=" + srcLength);
         }
 
-        buffer.putStringWithoutLengthAscii(offset + 15, src);
+        buffer.putStringWithoutLengthAscii(offset + 14, src);
 
         for (int start = srcLength; start < length; ++start)
         {
-            buffer.putByte(offset + 15 + start, (byte)0);
+            buffer.putByte(offset + 14 + start, (byte)0);
         }
 
         return this;
@@ -383,11 +383,11 @@ public final class OrderSubmitEncoder
             throw new IndexOutOfBoundsException("CharSequence too large for copy: byte length=" + srcLength);
         }
 
-        buffer.putStringWithoutLengthAscii(offset + 15, src);
+        buffer.putStringWithoutLengthAscii(offset + 14, src);
 
         for (int start = srcLength; start < length; ++start)
         {
-            buffer.putByte(offset + 15 + start, (byte)0);
+            buffer.putByte(offset + 14 + start, (byte)0);
         }
 
         return this;
@@ -405,7 +405,7 @@ public final class OrderSubmitEncoder
 
     public static int sideEncodingOffset()
     {
-        return 18;
+        return 17;
     }
 
     public static int sideEncodingLength()
@@ -425,7 +425,7 @@ public final class OrderSubmitEncoder
 
     public OrderSubmitEncoder side(final Side value)
     {
-        buffer.putByte(offset + 18, value.value());
+        buffer.putByte(offset + 17, value.value());
         return this;
     }
 
@@ -441,7 +441,7 @@ public final class OrderSubmitEncoder
 
     public static int qtyEncodingOffset()
     {
-        return 19;
+        return 18;
     }
 
     public static int qtyEncodingLength()
@@ -476,7 +476,7 @@ public final class OrderSubmitEncoder
 
     public OrderSubmitEncoder qty(final long value)
     {
-        buffer.putLong(offset + 19, value, BYTE_ORDER);
+        buffer.putLong(offset + 18, value, BYTE_ORDER);
         return this;
     }
 
@@ -493,7 +493,7 @@ public final class OrderSubmitEncoder
 
     public static int valueDateEncodingOffset()
     {
-        return 27;
+        return 26;
     }
 
     public static int valueDateEncodingLength()
@@ -539,7 +539,7 @@ public final class OrderSubmitEncoder
             throw new IndexOutOfBoundsException("index out of range: index=" + index);
         }
 
-        final int pos = offset + 27 + (index * 1);
+        final int pos = offset + 26 + (index * 1);
         buffer.putByte(pos, value);
 
         return this;
@@ -558,7 +558,7 @@ public final class OrderSubmitEncoder
             throw new IndexOutOfBoundsException("Copy will go out of range: offset=" + srcOffset);
         }
 
-        buffer.putBytes(offset + 27, src, srcOffset, length);
+        buffer.putBytes(offset + 26, src, srcOffset, length);
 
         return this;
     }
@@ -572,11 +572,11 @@ public final class OrderSubmitEncoder
             throw new IndexOutOfBoundsException("String too large for copy: byte length=" + srcLength);
         }
 
-        buffer.putStringWithoutLengthAscii(offset + 27, src);
+        buffer.putStringWithoutLengthAscii(offset + 26, src);
 
         for (int start = srcLength; start < length; ++start)
         {
-            buffer.putByte(offset + 27 + start, (byte)0);
+            buffer.putByte(offset + 26 + start, (byte)0);
         }
 
         return this;
@@ -591,11 +591,11 @@ public final class OrderSubmitEncoder
             throw new IndexOutOfBoundsException("CharSequence too large for copy: byte length=" + srcLength);
         }
 
-        buffer.putStringWithoutLengthAscii(offset + 27, src);
+        buffer.putStringWithoutLengthAscii(offset + 26, src);
 
         for (int start = srcLength; start < length; ++start)
         {
-            buffer.putByte(offset + 27 + start, (byte)0);
+            buffer.putByte(offset + 26 + start, (byte)0);
         }
 
         return this;
@@ -613,7 +613,7 @@ public final class OrderSubmitEncoder
 
     public static int userEncodingOffset()
     {
-        return 35;
+        return 34;
     }
 
     public static int userEncodingLength()
@@ -659,7 +659,7 @@ public final class OrderSubmitEncoder
             throw new IndexOutOfBoundsException("index out of range: index=" + index);
         }
 
-        final int pos = offset + 35 + (index * 1);
+        final int pos = offset + 34 + (index * 1);
         buffer.putByte(pos, value);
 
         return this;
@@ -678,7 +678,7 @@ public final class OrderSubmitEncoder
             throw new IndexOutOfBoundsException("Copy will go out of range: offset=" + srcOffset);
         }
 
-        buffer.putBytes(offset + 35, src, srcOffset, length);
+        buffer.putBytes(offset + 34, src, srcOffset, length);
 
         return this;
     }
@@ -692,11 +692,11 @@ public final class OrderSubmitEncoder
             throw new IndexOutOfBoundsException("String too large for copy: byte length=" + srcLength);
         }
 
-        buffer.putStringWithoutLengthAscii(offset + 35, src);
+        buffer.putStringWithoutLengthAscii(offset + 34, src);
 
         for (int start = srcLength; start < length; ++start)
         {
-            buffer.putByte(offset + 35 + start, (byte)0);
+            buffer.putByte(offset + 34 + start, (byte)0);
         }
 
         return this;
@@ -711,11 +711,11 @@ public final class OrderSubmitEncoder
             throw new IndexOutOfBoundsException("CharSequence too large for copy: byte length=" + srcLength);
         }
 
-        buffer.putStringWithoutLengthAscii(offset + 35, src);
+        buffer.putStringWithoutLengthAscii(offset + 34, src);
 
         for (int start = srcLength; start < length; ++start)
         {
-            buffer.putByte(offset + 35 + start, (byte)0);
+            buffer.putByte(offset + 34 + start, (byte)0);
         }
 
         return this;

@@ -1,5 +1,6 @@
 package com.vijay.matching.service;
 
+import com.vijay.matching.model.Execution;
 import com.vijay.matching.model.Order;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -9,7 +10,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -249,4 +253,67 @@ public class OrderBookTest {
         assertEquals(5000, aggregatedOrder.qty());
     }
 
+    @Test
+        //1,EURUSD,USD,S,10000,20250130,UserA
+        //2,EURUSD,USD,B,5000,20250130,UserA
+        //Expected: 1,EURUSD,USD,S,5000,20250130,UserA
+        //3,EURUSD,USD,B,20000,20250130,UserC
+        //Expected: 3,EURUSD,USD,B,15000,20250130,UserC
+    void testScenarioMatchingB() {
+        //Order1
+        Order newOrder = new Order().id(1).symbol("EURUSD").dealt("USD").qty(10000).isBuy(false).valueDate("20250130").user("UserA");
+        assertTrue(orderBook.addOrder(newOrder));
+        ArgumentCaptor<Order> captor = ArgumentCaptor.forClass(Order.class);
+        verify(executionsPublisher, times(1)).publish(captor.capture());
+        Order aggregatedOrder = captor.getValue();
+        Assertions.assertNotNull(aggregatedOrder);
+        assertEquals(1, aggregatedOrder.id());
+        assertEquals("UserA", aggregatedOrder.user());
+        assertEquals("USD", aggregatedOrder.dealt());
+        assertEquals("20250130", aggregatedOrder.valueDate());
+        assertFalse(aggregatedOrder.isBuy());
+        assertEquals(10000, aggregatedOrder.qty());
+
+        //Order2
+        newOrder = new Order().id(2).symbol("EURUSD").dealt("USD").qty(5000).isBuy(true).valueDate("20250130").user("UserA");
+        assertTrue(orderBook.addOrder(newOrder));
+        captor = ArgumentCaptor.forClass(Order.class);
+        verify(executionsPublisher, times(2)).publish(captor.capture());
+        aggregatedOrder = captor.getValue();
+        Assertions.assertNotNull(aggregatedOrder);
+        assertEquals(1, aggregatedOrder.id());
+        assertEquals("UserA", aggregatedOrder.user());
+        assertEquals("USD", aggregatedOrder.dealt());
+        assertEquals("20250130", aggregatedOrder.valueDate());
+        assertFalse(aggregatedOrder.isBuy());
+        assertEquals(5000, aggregatedOrder.qty());
+
+        //Order3
+        newOrder = new Order().id(3).symbol("EURUSD").dealt("USD").qty(20000).isBuy(true).valueDate("20250130").user("UserC");
+        assertTrue(orderBook.addOrder(newOrder));
+        captor = ArgumentCaptor.forClass(Order.class);
+        verify(executionsPublisher, times(3)).publish(captor.capture());
+        aggregatedOrder = captor.getValue();
+        Assertions.assertNotNull(aggregatedOrder);
+        assertEquals(3, aggregatedOrder.id());
+        assertEquals("UserC", aggregatedOrder.user());
+        assertEquals("USD", aggregatedOrder.dealt());
+        assertEquals("20250130", aggregatedOrder.valueDate());
+        assertTrue(aggregatedOrder.isBuy());
+        assertEquals(20000, aggregatedOrder.qty());
+
+        orderBook.marketMatch(newOrder.user());
+        ArgumentCaptor<List<Execution>> captor1 = ArgumentCaptor.forClass(List.class);
+        verify(executionsPublisher, times(1)).publish(captor1.capture());
+        List<Execution> executionList = captor1.getValue();
+        assertNotNull(executionList);
+        assertEquals(2, executionList.size());
+        Execution execution = executionList.get(0);
+        assertEquals(5000, execution.execQty());
+        assertEquals(100, execution.matchPercentage());
+
+        execution = executionList.get(1);
+        assertEquals(5000, execution.execQty());
+        assertEquals(25, execution.matchPercentage());
+    }
 }

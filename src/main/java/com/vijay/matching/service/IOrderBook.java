@@ -6,7 +6,7 @@ public interface IOrderBook {
     boolean addOrder(Order order);
     boolean cancelOrder(Order order);
     void match();
-    void marketMatch();
+    void marketMatch(String user);
     void iocMatch();
     void fokMatch();
     void topOfBook();

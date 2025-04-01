@@ -5,4 +5,5 @@ public interface IClientOrderPublisher {
                    long qty, String valueDate, String user);
 
     boolean cancel(long clientOrderId, long originalId, String symbol, String side);
+    boolean match(String userid, String symbol);
 }

@@ -1,13 +1,12 @@
 package com.vijay.matching.service;
 
-import com.vijay.matching.ExecutionDecoder;
+import com.vijay.matching.OrderCancelDecoder;
+import com.vijay.matching.OrderMatchDecoder;
+import com.vijay.matching.OrderSubmitDecoder;
 import com.vijay.matching.Side;
 import com.vijay.matching.config.AeronPubSub;
-import com.vijay.matching.OrderCancelDecoder;
-import com.vijay.matching.OrderSubmitDecoder;
 import com.vijay.matching.model.MsgTypes;
 import com.vijay.matching.model.Order;
-import com.vijay.matching.model.OrderType;
 import io.aeron.Aeron;
 import io.aeron.FragmentAssembler;
 import io.aeron.Subscription;
@@ -29,7 +28,7 @@ public class OrdersListener implements FragmentHandler {
     private final Subscription subscription;
     private final OrderSubmitDecoder orderSubmitDecoder = new OrderSubmitDecoder();
     private final OrderCancelDecoder orderCancelDecoder = new OrderCancelDecoder();
-    private final ExecutionDecoder executionDecoder = new ExecutionDecoder();
+    private final OrderMatchDecoder orderMatchDecoder = new OrderMatchDecoder();
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
     private final OrderBookManager orderBookManager;
     private final AtomicLong eventId = new AtomicLong(10000);
@@ -61,8 +60,8 @@ public class OrdersListener implements FragmentHandler {
         byte messageType = directBuffer.getByte(offset);
         switch (messageType) {
             case MsgTypes.SUBMIT -> {
-                orderSubmitDecoder.wrap(directBuffer, offset + 1, length -1, 0);
-                log.info("received {}", orderSubmitDecoder.id());
+                orderSubmitDecoder.wrap(directBuffer, offset + 1, length - 1, 0);
+                log.info("received submit {}", orderSubmitDecoder.id());
                 orderBookManager.submitOrder(new Order().id(orderSubmitDecoder.id())
                         .symbol(orderSubmitDecoder.symbol())
                         .isBuy(orderSubmitDecoder.side() == Side.Buy)
@@ -72,20 +71,19 @@ public class OrdersListener implements FragmentHandler {
                         .user(orderSubmitDecoder.user()));
             }
             case MsgTypes.CANCEL -> {
-                orderCancelDecoder.wrap(directBuffer, offset + 1, length -1, 0);
-                log.info("received {}", orderCancelDecoder.id());
+                orderCancelDecoder.wrap(directBuffer, offset + 1, length - 1, 0);
+                log.info("received cancel {}", orderCancelDecoder.id());
                 orderBookManager.cancelOrder(new Order().id(orderCancelDecoder.originalId())
                         .symbol(orderCancelDecoder.symbol())
                         .isBuy(orderCancelDecoder.side() == Side.Buy));
             }
-            case MsgTypes.EXEC -> {
-                executionDecoder.wrap(directBuffer, offset +1, length -1, 0);
-                log.info("received exec {}", executionDecoder);
+            case MsgTypes.MATCH -> {
+                orderMatchDecoder.wrap(directBuffer, offset + 1, length - 1, 0);
+                log.info("received match {}", orderMatchDecoder.user());
+                orderBookManager.match(orderMatchDecoder.user(),
+                        orderMatchDecoder.symbol());
             }
-            case MsgTypes.AGG -> {
-                orderSubmitDecoder.wrap(directBuffer, offset + 1, length -1, 0);
-                log.info("received aggregatedOrder {}", orderSubmitDecoder.id());
-            }
+
             default -> {
                 log.error("Unknown msg received");
             }
