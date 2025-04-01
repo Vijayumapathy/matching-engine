@@ -26,3 +26,13 @@ Simple Binary Encoding - encoding/decoding messages, helps in off heap memory mo
 Swagger-ui - exposes rest api endpoints in a nice GUI
 Mokito - for unit tests
 
+# Workflow:
+1. ClientOrderPublisher - publishes order/match request messages originating for file or rest api endpoint
+2. ClientExecListener - listens for all execution/aggregation messages from the engine
+3. OrdersListener - Entry point for engine, decodes messages and passes to OrderBookManager
+4. OrderBookManager - maintains configured number of order books based on ccy pair
+5. OrderBook - provides aggregation/matching functionality for specific ccy pair. orders are grouped by valuedates
+6. ExecutionsPublisher - publishes all messages emitted by engine to client listeners
+7. MatchingClientController - rest api endpoints and swagger ui
+
+3-7 can be started as multiple instances to scale up and support many ccy pairs
