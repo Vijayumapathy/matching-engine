@@ -12,10 +12,10 @@ import java.time.Instant;
 public class Order {
     private long id;
     private String symbol;
+    private String dealt;
     private boolean isBuy;
-    private double price;
     private long qty;
-    private OrderType orderType;
-    private long eventId;
+    private String valueDate;
+    private String user;
 
 }

@@ -1,2 +1,2 @@
-ID,Symbol,Side,Qty,price,orderType
-1000,EUR.USD,S,10000,100.11,2
+ID,Symbol,dealt,Side,Qty,valueDate,user
+1000,EURUSD,USD,S,10000,20250501,UserA

@@ -15,7 +15,7 @@ public class OrderBookManager implements IOrderBookManager{
 
     public OrderBookManager(ExecutionsPublisher executionsPublisher) {
         this.executionsPublisher = executionsPublisher;
-        Stream.of("EUR.USD", "USD.CAD").forEach(ccy -> {
+        Stream.of("EURUSD", "USDCAD").forEach(ccy -> {
             orderBookMap.put(ccy, new OrderBook(ccy, executionsPublisher));
         });
     }

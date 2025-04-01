@@ -15,9 +15,9 @@ public class MatchingClientController {
     }
 
     @GetMapping(value = "/submitOrder", produces = MediaType.TEXT_PLAIN_VALUE)
-    public boolean submitOrder(long clientOrderId, String symbol, String side,
-                               long qty, float price, int orderType) {
-        return orderPublisher.submit(clientOrderId, symbol, side, qty, price, orderType);
+    public boolean submitOrder(long clientOrderId, String symbol, String dealt,
+                               String side, long qty, String valueDate, String user) {
+        return orderPublisher.submit(clientOrderId, symbol, dealt, side, qty, valueDate, user);
     }
 
     @GetMapping(value = "/cancelOrder", produces = MediaType.TEXT_PLAIN_VALUE)

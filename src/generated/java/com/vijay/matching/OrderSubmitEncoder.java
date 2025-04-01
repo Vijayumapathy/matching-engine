@@ -6,7 +6,7 @@ import org.agrona.MutableDirectBuffer;
 @SuppressWarnings("all")
 public final class OrderSubmitEncoder
 {
-    public static final int BLOCK_LENGTH = 32;
+    public static final int BLOCK_LENGTH = 55;
     public static final int TEMPLATE_ID = 1;
     public static final int SCHEMA_ID = 1;
     public static final int SCHEMA_VERSION = 0;
@@ -265,9 +265,137 @@ public final class OrderSubmitEncoder
         return this;
     }
 
-    public static int sideId()
+    public static int dealtCcyId()
     {
         return 3;
+    }
+
+    public static int dealtCcySinceVersion()
+    {
+        return 0;
+    }
+
+    public static int dealtCcyEncodingOffset()
+    {
+        return 15;
+    }
+
+    public static int dealtCcyEncodingLength()
+    {
+        return 3;
+    }
+
+    public static String dealtCcyMetaAttribute(final MetaAttribute metaAttribute)
+    {
+        if (MetaAttribute.PRESENCE == metaAttribute)
+        {
+            return "required";
+        }
+
+        return "";
+    }
+
+    public static byte dealtCcyNullValue()
+    {
+        return (byte)0;
+    }
+
+    public static byte dealtCcyMinValue()
+    {
+        return (byte)32;
+    }
+
+    public static byte dealtCcyMaxValue()
+    {
+        return (byte)126;
+    }
+
+    public static int dealtCcyLength()
+    {
+        return 3;
+    }
+
+
+    public OrderSubmitEncoder dealtCcy(final int index, final byte value)
+    {
+        if (index < 0 || index >= 3)
+        {
+            throw new IndexOutOfBoundsException("index out of range: index=" + index);
+        }
+
+        final int pos = offset + 15 + (index * 1);
+        buffer.putByte(pos, value);
+
+        return this;
+    }
+    public OrderSubmitEncoder putDealtCcy(final byte value0, final byte value1, final byte value2)
+    {
+        buffer.putByte(offset + 15, value0);
+        buffer.putByte(offset + 16, value1);
+        buffer.putByte(offset + 17, value2);
+
+        return this;
+    }
+
+    public static String dealtCcyCharacterEncoding()
+    {
+        return java.nio.charset.StandardCharsets.US_ASCII.name();
+    }
+
+    public OrderSubmitEncoder putDealtCcy(final byte[] src, final int srcOffset)
+    {
+        final int length = 3;
+        if (srcOffset < 0 || srcOffset > (src.length - length))
+        {
+            throw new IndexOutOfBoundsException("Copy will go out of range: offset=" + srcOffset);
+        }
+
+        buffer.putBytes(offset + 15, src, srcOffset, length);
+
+        return this;
+    }
+
+    public OrderSubmitEncoder dealtCcy(final String src)
+    {
+        final int length = 3;
+        final int srcLength = null == src ? 0 : src.length();
+        if (srcLength > length)
+        {
+            throw new IndexOutOfBoundsException("String too large for copy: byte length=" + srcLength);
+        }
+
+        buffer.putStringWithoutLengthAscii(offset + 15, src);
+
+        for (int start = srcLength; start < length; ++start)
+        {
+            buffer.putByte(offset + 15 + start, (byte)0);
+        }
+
+        return this;
+    }
+
+    public OrderSubmitEncoder dealtCcy(final CharSequence src)
+    {
+        final int length = 3;
+        final int srcLength = null == src ? 0 : src.length();
+        if (srcLength > length)
+        {
+            throw new IndexOutOfBoundsException("CharSequence too large for copy: byte length=" + srcLength);
+        }
+
+        buffer.putStringWithoutLengthAscii(offset + 15, src);
+
+        for (int start = srcLength; start < length; ++start)
+        {
+            buffer.putByte(offset + 15 + start, (byte)0);
+        }
+
+        return this;
+    }
+
+    public static int sideId()
+    {
+        return 4;
     }
 
     public static int sideSinceVersion()
@@ -277,7 +405,7 @@ public final class OrderSubmitEncoder
 
     public static int sideEncodingOffset()
     {
-        return 15;
+        return 18;
     }
 
     public static int sideEncodingLength()
@@ -297,13 +425,13 @@ public final class OrderSubmitEncoder
 
     public OrderSubmitEncoder side(final Side value)
     {
-        buffer.putByte(offset + 15, value.value());
+        buffer.putByte(offset + 18, value.value());
         return this;
     }
 
     public static int qtyId()
     {
-        return 4;
+        return 5;
     }
 
     public static int qtySinceVersion()
@@ -313,7 +441,7 @@ public final class OrderSubmitEncoder
 
     public static int qtyEncodingOffset()
     {
-        return 16;
+        return 19;
     }
 
     public static int qtyEncodingLength()
@@ -348,84 +476,32 @@ public final class OrderSubmitEncoder
 
     public OrderSubmitEncoder qty(final long value)
     {
-        buffer.putLong(offset + 16, value, BYTE_ORDER);
+        buffer.putLong(offset + 19, value, BYTE_ORDER);
         return this;
     }
 
 
-    public static int priceId()
-    {
-        return 5;
-    }
-
-    public static int priceSinceVersion()
-    {
-        return 0;
-    }
-
-    public static int priceEncodingOffset()
-    {
-        return 24;
-    }
-
-    public static int priceEncodingLength()
-    {
-        return 4;
-    }
-
-    public static String priceMetaAttribute(final MetaAttribute metaAttribute)
-    {
-        if (MetaAttribute.PRESENCE == metaAttribute)
-        {
-            return "required";
-        }
-
-        return "";
-    }
-
-    public static float priceNullValue()
-    {
-        return Float.NaN;
-    }
-
-    public static float priceMinValue()
-    {
-        return 1.401298464324817E-45f;
-    }
-
-    public static float priceMaxValue()
-    {
-        return 3.4028234663852886E38f;
-    }
-
-    public OrderSubmitEncoder price(final float value)
-    {
-        buffer.putFloat(offset + 24, value, BYTE_ORDER);
-        return this;
-    }
-
-
-    public static int orderTypeId()
+    public static int valueDateId()
     {
         return 6;
     }
 
-    public static int orderTypeSinceVersion()
+    public static int valueDateSinceVersion()
     {
         return 0;
     }
 
-    public static int orderTypeEncodingOffset()
+    public static int valueDateEncodingOffset()
     {
-        return 28;
+        return 27;
     }
 
-    public static int orderTypeEncodingLength()
+    public static int valueDateEncodingLength()
     {
-        return 4;
+        return 8;
     }
 
-    public static String orderTypeMetaAttribute(final MetaAttribute metaAttribute)
+    public static String valueDateMetaAttribute(final MetaAttribute metaAttribute)
     {
         if (MetaAttribute.PRESENCE == metaAttribute)
         {
@@ -435,9 +511,213 @@ public final class OrderSubmitEncoder
         return "";
     }
 
-    public OrderSubmitEncoder orderType(final OrderType value)
+    public static byte valueDateNullValue()
     {
-        buffer.putInt(offset + 28, value.value(), BYTE_ORDER);
+        return (byte)0;
+    }
+
+    public static byte valueDateMinValue()
+    {
+        return (byte)32;
+    }
+
+    public static byte valueDateMaxValue()
+    {
+        return (byte)126;
+    }
+
+    public static int valueDateLength()
+    {
+        return 8;
+    }
+
+
+    public OrderSubmitEncoder valueDate(final int index, final byte value)
+    {
+        if (index < 0 || index >= 8)
+        {
+            throw new IndexOutOfBoundsException("index out of range: index=" + index);
+        }
+
+        final int pos = offset + 27 + (index * 1);
+        buffer.putByte(pos, value);
+
+        return this;
+    }
+
+    public static String valueDateCharacterEncoding()
+    {
+        return java.nio.charset.StandardCharsets.US_ASCII.name();
+    }
+
+    public OrderSubmitEncoder putValueDate(final byte[] src, final int srcOffset)
+    {
+        final int length = 8;
+        if (srcOffset < 0 || srcOffset > (src.length - length))
+        {
+            throw new IndexOutOfBoundsException("Copy will go out of range: offset=" + srcOffset);
+        }
+
+        buffer.putBytes(offset + 27, src, srcOffset, length);
+
+        return this;
+    }
+
+    public OrderSubmitEncoder valueDate(final String src)
+    {
+        final int length = 8;
+        final int srcLength = null == src ? 0 : src.length();
+        if (srcLength > length)
+        {
+            throw new IndexOutOfBoundsException("String too large for copy: byte length=" + srcLength);
+        }
+
+        buffer.putStringWithoutLengthAscii(offset + 27, src);
+
+        for (int start = srcLength; start < length; ++start)
+        {
+            buffer.putByte(offset + 27 + start, (byte)0);
+        }
+
+        return this;
+    }
+
+    public OrderSubmitEncoder valueDate(final CharSequence src)
+    {
+        final int length = 8;
+        final int srcLength = null == src ? 0 : src.length();
+        if (srcLength > length)
+        {
+            throw new IndexOutOfBoundsException("CharSequence too large for copy: byte length=" + srcLength);
+        }
+
+        buffer.putStringWithoutLengthAscii(offset + 27, src);
+
+        for (int start = srcLength; start < length; ++start)
+        {
+            buffer.putByte(offset + 27 + start, (byte)0);
+        }
+
+        return this;
+    }
+
+    public static int userId()
+    {
+        return 7;
+    }
+
+    public static int userSinceVersion()
+    {
+        return 0;
+    }
+
+    public static int userEncodingOffset()
+    {
+        return 35;
+    }
+
+    public static int userEncodingLength()
+    {
+        return 20;
+    }
+
+    public static String userMetaAttribute(final MetaAttribute metaAttribute)
+    {
+        if (MetaAttribute.PRESENCE == metaAttribute)
+        {
+            return "required";
+        }
+
+        return "";
+    }
+
+    public static byte userNullValue()
+    {
+        return (byte)0;
+    }
+
+    public static byte userMinValue()
+    {
+        return (byte)32;
+    }
+
+    public static byte userMaxValue()
+    {
+        return (byte)126;
+    }
+
+    public static int userLength()
+    {
+        return 20;
+    }
+
+
+    public OrderSubmitEncoder user(final int index, final byte value)
+    {
+        if (index < 0 || index >= 20)
+        {
+            throw new IndexOutOfBoundsException("index out of range: index=" + index);
+        }
+
+        final int pos = offset + 35 + (index * 1);
+        buffer.putByte(pos, value);
+
+        return this;
+    }
+
+    public static String userCharacterEncoding()
+    {
+        return java.nio.charset.StandardCharsets.US_ASCII.name();
+    }
+
+    public OrderSubmitEncoder putUser(final byte[] src, final int srcOffset)
+    {
+        final int length = 20;
+        if (srcOffset < 0 || srcOffset > (src.length - length))
+        {
+            throw new IndexOutOfBoundsException("Copy will go out of range: offset=" + srcOffset);
+        }
+
+        buffer.putBytes(offset + 35, src, srcOffset, length);
+
+        return this;
+    }
+
+    public OrderSubmitEncoder user(final String src)
+    {
+        final int length = 20;
+        final int srcLength = null == src ? 0 : src.length();
+        if (srcLength > length)
+        {
+            throw new IndexOutOfBoundsException("String too large for copy: byte length=" + srcLength);
+        }
+
+        buffer.putStringWithoutLengthAscii(offset + 35, src);
+
+        for (int start = srcLength; start < length; ++start)
+        {
+            buffer.putByte(offset + 35 + start, (byte)0);
+        }
+
+        return this;
+    }
+
+    public OrderSubmitEncoder user(final CharSequence src)
+    {
+        final int length = 20;
+        final int srcLength = null == src ? 0 : src.length();
+        if (srcLength > length)
+        {
+            throw new IndexOutOfBoundsException("CharSequence too large for copy: byte length=" + srcLength);
+        }
+
+        buffer.putStringWithoutLengthAscii(offset + 35, src);
+
+        for (int start = srcLength; start < length; ++start)
+        {
+            buffer.putByte(offset + 35 + start, (byte)0);
+        }
+
         return this;
     }
 

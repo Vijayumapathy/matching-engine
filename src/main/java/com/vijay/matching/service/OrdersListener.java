@@ -67,8 +67,9 @@ public class OrdersListener implements FragmentHandler {
                         .symbol(orderSubmitDecoder.symbol())
                         .isBuy(orderSubmitDecoder.side() == Side.Buy)
                         .qty(orderSubmitDecoder.qty())
-                        .price(orderSubmitDecoder.price())
-                        .orderType(OrderType.get(orderSubmitDecoder.orderType().value())));
+                        .dealt(orderSubmitDecoder.dealtCcy())
+                        .valueDate(orderSubmitDecoder.valueDate())
+                        .user(orderSubmitDecoder.user()));
             }
             case MsgTypes.CANCEL -> {
                 orderCancelDecoder.wrap(directBuffer, offset + 1, length -1, 0);
@@ -80,6 +81,10 @@ public class OrdersListener implements FragmentHandler {
             case MsgTypes.EXEC -> {
                 executionDecoder.wrap(directBuffer, offset +1, length -1, 0);
                 log.info("received exec {}", executionDecoder);
+            }
+            case MsgTypes.AGG -> {
+                orderSubmitDecoder.wrap(directBuffer, offset + 1, length -1, 0);
+                log.info("received aggregatedOrder {}", orderSubmitDecoder.id());
             }
             default -> {
                 log.error("Unknown msg received");

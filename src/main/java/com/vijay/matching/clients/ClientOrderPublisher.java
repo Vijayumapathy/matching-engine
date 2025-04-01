@@ -45,16 +45,16 @@ public class ClientOrderPublisher implements IClientOrderPublisher {
     }
 
     @Override
-    public boolean submit(long clientOrderId, String symbol, String side,
-                          long qty, float price, int orderType) {
+    public boolean submit(long clientOrderId, String symbol, String dealt, String side, long qty, String valueDate, String user) {
         unsafeBuffer.putByte(0, MsgTypes.SUBMIT);
         orderSubmitEncoder.wrap(unsafeBuffer, 1)
                 .id(clientOrderId)
                 .symbol(symbol)
+                .dealtCcy(dealt)
                 .side(Side.get((byte)side.charAt(0)))
                 .qty(qty)
-                .price(price)
-                .orderType(OrderType.get(orderType));
+                .valueDate(valueDate)
+                .user(user);
         long status;
         do {
             status = orderPublication.offer(unsafeBuffer, 0,
@@ -115,9 +115,8 @@ public class ClientOrderPublisher implements IClientOrderPublisher {
                         .forEach(line -> {
                             String[] params = line.split(",");
                             submit(Integer.parseInt(params[0]), params[1],
-                                    params[2], Integer.parseInt(params[3]),
-                                    Float.parseFloat(params[4]),
-                                    Integer.parseInt(params[5]));
+                                    params[2], params[3],Integer.parseInt(params[4]),
+                                    params[5], params[6]);
                             try {
                                 Thread.sleep(100);
                             } catch (InterruptedException e) {

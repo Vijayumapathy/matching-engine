@@ -5,7 +5,7 @@ import com.vijay.matching.model.Order;
 public interface IOrderBook {
     boolean addOrder(Order order);
     boolean cancelOrder(Order order);
-    void limitMatch();
+    void match();
     void marketMatch();
     void iocMatch();
     void fokMatch();

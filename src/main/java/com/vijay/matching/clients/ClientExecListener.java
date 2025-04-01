@@ -1,13 +1,9 @@
 package com.vijay.matching.clients;
 
 import com.vijay.matching.ExecutionDecoder;
-import com.vijay.matching.OrderCancelDecoder;
 import com.vijay.matching.OrderSubmitDecoder;
-import com.vijay.matching.Side;
 import com.vijay.matching.config.AeronPubSub;
 import com.vijay.matching.model.MsgTypes;
-import com.vijay.matching.model.Order;
-import com.vijay.matching.model.OrderType;
 import io.aeron.Aeron;
 import io.aeron.FragmentAssembler;
 import io.aeron.Subscription;
@@ -27,6 +23,7 @@ public class ClientExecListener implements FragmentHandler {
 
     private final Subscription subscription;
     private final ExecutionDecoder executionDecoder = new ExecutionDecoder();
+    private final OrderSubmitDecoder orderSubmitDecoder = new OrderSubmitDecoder();
     private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     public ClientExecListener(Aeron aeron) {
@@ -57,6 +54,10 @@ public class ClientExecListener implements FragmentHandler {
             case MsgTypes.EXEC -> {
                 executionDecoder.wrap(directBuffer, offset + 1, length - 1, 0);
                 log.info("received exec {} qty {}", executionDecoder.id(), executionDecoder.execQty());
+            }
+            case MsgTypes.AGG -> {
+                orderSubmitDecoder.wrap(directBuffer, offset + 1, length - 1, 0);
+                log.info("received aggregatedOrder {}", orderSubmitDecoder.id());
             }
             default -> {
                 log.error("Unknown msg received");

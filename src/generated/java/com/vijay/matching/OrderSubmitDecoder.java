@@ -6,7 +6,7 @@ import org.agrona.DirectBuffer;
 @SuppressWarnings("all")
 public final class OrderSubmitDecoder
 {
-    public static final int BLOCK_LENGTH = 32;
+    public static final int BLOCK_LENGTH = 55;
     public static final int TEMPLATE_ID = 1;
     public static final int SCHEMA_ID = 1;
     public static final int SCHEMA_VERSION = 0;
@@ -297,9 +297,127 @@ public final class OrderSubmitDecoder
     }
 
 
-    public static int sideId()
+    public static int dealtCcyId()
     {
         return 3;
+    }
+
+    public static int dealtCcySinceVersion()
+    {
+        return 0;
+    }
+
+    public static int dealtCcyEncodingOffset()
+    {
+        return 15;
+    }
+
+    public static int dealtCcyEncodingLength()
+    {
+        return 3;
+    }
+
+    public static String dealtCcyMetaAttribute(final MetaAttribute metaAttribute)
+    {
+        if (MetaAttribute.PRESENCE == metaAttribute)
+        {
+            return "required";
+        }
+
+        return "";
+    }
+
+    public static byte dealtCcyNullValue()
+    {
+        return (byte)0;
+    }
+
+    public static byte dealtCcyMinValue()
+    {
+        return (byte)32;
+    }
+
+    public static byte dealtCcyMaxValue()
+    {
+        return (byte)126;
+    }
+
+    public static int dealtCcyLength()
+    {
+        return 3;
+    }
+
+
+    public byte dealtCcy(final int index)
+    {
+        if (index < 0 || index >= 3)
+        {
+            throw new IndexOutOfBoundsException("index out of range: index=" + index);
+        }
+
+        final int pos = offset + 15 + (index * 1);
+
+        return buffer.getByte(pos);
+    }
+
+
+    public static String dealtCcyCharacterEncoding()
+    {
+        return java.nio.charset.StandardCharsets.US_ASCII.name();
+    }
+
+    public int getDealtCcy(final byte[] dst, final int dstOffset)
+    {
+        final int length = 3;
+        if (dstOffset < 0 || dstOffset > (dst.length - length))
+        {
+            throw new IndexOutOfBoundsException("Copy will go out of range: offset=" + dstOffset);
+        }
+
+        buffer.getBytes(offset + 15, dst, dstOffset, length);
+
+        return length;
+    }
+
+    public String dealtCcy()
+    {
+        final byte[] dst = new byte[3];
+        buffer.getBytes(offset + 15, dst, 0, 3);
+
+        int end = 0;
+        for (; end < 3 && dst[end] != 0; ++end);
+
+        return new String(dst, 0, end, java.nio.charset.StandardCharsets.US_ASCII);
+    }
+
+
+    public int getDealtCcy(final Appendable value)
+    {
+        for (int i = 0; i < 3; ++i)
+        {
+            final int c = buffer.getByte(offset + 15 + i) & 0xFF;
+            if (c == 0)
+            {
+                return i;
+            }
+
+            try
+            {
+                value.append(c > 127 ? '?' : (char)c);
+            }
+            catch (final java.io.IOException ex)
+            {
+                throw new java.io.UncheckedIOException(ex);
+            }
+        }
+
+        return 3;
+    }
+
+
+    public static int sideId()
+    {
+        return 4;
     }
 
     public static int sideSinceVersion()
@@ -309,7 +427,7 @@ public final class OrderSubmitDecoder
 
     public static int sideEncodingOffset()
     {
-        return 15;
+        return 18;
     }
 
     public static int sideEncodingLength()
@@ -329,18 +447,18 @@ public final class OrderSubmitDecoder
 
     public byte sideRaw()
     {
-        return buffer.getByte(offset + 15);
+        return buffer.getByte(offset + 18);
     }
 
     public Side side()
     {
-        return Side.get(buffer.getByte(offset + 15));
+        return Side.get(buffer.getByte(offset + 18));
     }
 
 
     public static int qtyId()
     {
-        return 4;
+        return 5;
     }
 
     public static int qtySinceVersion()
@@ -350,7 +468,7 @@ public final class OrderSubmitDecoder
 
     public static int qtyEncodingOffset()
     {
-        return 16;
+        return 19;
     }
 
     public static int qtyEncodingLength()
@@ -385,82 +503,31 @@ public final class OrderSubmitDecoder
 
     public long qty()
     {
-        return buffer.getLong(offset + 16, BYTE_ORDER);
+        return buffer.getLong(offset + 19, BYTE_ORDER);
     }
 
 
-    public static int priceId()
-    {
-        return 5;
-    }
-
-    public static int priceSinceVersion()
-    {
-        return 0;
-    }
-
-    public static int priceEncodingOffset()
-    {
-        return 24;
-    }
-
-    public static int priceEncodingLength()
-    {
-        return 4;
-    }
-
-    public static String priceMetaAttribute(final MetaAttribute metaAttribute)
-    {
-        if (MetaAttribute.PRESENCE == metaAttribute)
-        {
-            return "required";
-        }
-
-        return "";
-    }
-
-    public static float priceNullValue()
-    {
-        return Float.NaN;
-    }
-
-    public static float priceMinValue()
-    {
-        return 1.401298464324817E-45f;
-    }
-
-    public static float priceMaxValue()
-    {
-        return 3.4028234663852886E38f;
-    }
-
-    public float price()
-    {
-        return buffer.getFloat(offset + 24, BYTE_ORDER);
-    }
-
-
-    public static int orderTypeId()
+    public static int valueDateId()
     {
         return 6;
     }
 
-    public static int orderTypeSinceVersion()
+    public static int valueDateSinceVersion()
     {
         return 0;
     }
 
-    public static int orderTypeEncodingOffset()
+    public static int valueDateEncodingOffset()
     {
-        return 28;
+        return 27;
     }
 
-    public static int orderTypeEncodingLength()
+    public static int valueDateEncodingLength()
     {
-        return 4;
+        return 8;
     }
 
-    public static String orderTypeMetaAttribute(final MetaAttribute metaAttribute)
+    public static String valueDateMetaAttribute(final MetaAttribute metaAttribute)
     {
         if (MetaAttribute.PRESENCE == metaAttribute)
         {
@@ -470,14 +537,209 @@ public final class OrderSubmitDecoder
         return "";
     }
 
-    public int orderTypeRaw()
+    public static byte valueDateNullValue()
     {
-        return buffer.getInt(offset + 28, BYTE_ORDER);
+        return (byte)0;
     }
 
-    public OrderType orderType()
+    public static byte valueDateMinValue()
     {
-        return OrderType.get(buffer.getInt(offset + 28, BYTE_ORDER));
+        return (byte)32;
+    }
+
+    public static byte valueDateMaxValue()
+    {
+        return (byte)126;
+    }
+
+    public static int valueDateLength()
+    {
+        return 8;
+    }
+
+
+    public byte valueDate(final int index)
+    {
+        if (index < 0 || index >= 8)
+        {
+            throw new IndexOutOfBoundsException("index out of range: index=" + index);
+        }
+
+        final int pos = offset + 27 + (index * 1);
+
+        return buffer.getByte(pos);
+    }
+
+
+    public static String valueDateCharacterEncoding()
+    {
+        return java.nio.charset.StandardCharsets.US_ASCII.name();
+    }
+
+    public int getValueDate(final byte[] dst, final int dstOffset)
+    {
+        final int length = 8;
+        if (dstOffset < 0 || dstOffset > (dst.length - length))
+        {
+            throw new IndexOutOfBoundsException("Copy will go out of range: offset=" + dstOffset);
+        }
+
+        buffer.getBytes(offset + 27, dst, dstOffset, length);
+
+        return length;
+    }
+
+    public String valueDate()
+    {
+        final byte[] dst = new byte[8];
+        buffer.getBytes(offset + 27, dst, 0, 8);
+
+        int end = 0;
+        for (; end < 8 && dst[end] != 0; ++end);
+
+        return new String(dst, 0, end, java.nio.charset.StandardCharsets.US_ASCII);
+    }
+
+
+    public int getValueDate(final Appendable value)
+    {
+        for (int i = 0; i < 8; ++i)
+        {
+            final int c = buffer.getByte(offset + 27 + i) & 0xFF;
+            if (c == 0)
+            {
+                return i;
+            }
+
+            try
+            {
+                value.append(c > 127 ? '?' : (char)c);
+            }
+            catch (final java.io.IOException ex)
+            {
+                throw new java.io.UncheckedIOException(ex);
+            }
+        }
+
+        return 8;
+    }
+
+
+    public static int userId()
+    {
+        return 7;
+    }
+
+    public static int userSinceVersion()
+    {
+        return 0;
+    }
+
+    public static int userEncodingOffset()
+    {
+        return 35;
+    }
+
+    public static int userEncodingLength()
+    {
+        return 20;
+    }
+
+    public static String userMetaAttribute(final MetaAttribute metaAttribute)
+    {
+        if (MetaAttribute.PRESENCE == metaAttribute)
+        {
+            return "required";
+        }
+
+        return "";
+    }
+
+    public static byte userNullValue()
+    {
+        return (byte)0;
+    }
+
+    public static byte userMinValue()
+    {
+        return (byte)32;
+    }
+
+    public static byte userMaxValue()
+    {
+        return (byte)126;
+    }
+
+    public static int userLength()
+    {
+        return 20;
+    }
+
+
+    public byte user(final int index)
+    {
+        if (index < 0 || index >= 20)
+        {
+            throw new IndexOutOfBoundsException("index out of range: index=" + index);
+        }
+
+        final int pos = offset + 35 + (index * 1);
+
+        return buffer.getByte(pos);
+    }
+
+
+    public static String userCharacterEncoding()
+    {
+        return java.nio.charset.StandardCharsets.US_ASCII.name();
+    }
+
+    public int getUser(final byte[] dst, final int dstOffset)
+    {
+        final int length = 20;
+        if (dstOffset < 0 || dstOffset > (dst.length - length))
+        {
+            throw new IndexOutOfBoundsException("Copy will go out of range: offset=" + dstOffset);
+        }
+
+        buffer.getBytes(offset + 35, dst, dstOffset, length);
+
+        return length;
+    }
+
+    public String user()
+    {
+        final byte[] dst = new byte[20];
+        buffer.getBytes(offset + 35, dst, 0, 20);
+
+        int end = 0;
+        for (; end < 20 && dst[end] != 0; ++end);
+
+        return new String(dst, 0, end, java.nio.charset.StandardCharsets.US_ASCII);
+    }
+
+
+    public int getUser(final Appendable value)
+    {
+        for (int i = 0; i < 20; ++i)
+        {
+            final int c = buffer.getByte(offset + 35 + i) & 0xFF;
+            if (c == 0)
+            {
+                return i;
+            }
+
+            try
+            {
+                value.append(c > 127 ? '?' : (char)c);
+            }
+            catch (final java.io.IOException ex)
+            {
+                throw new java.io.UncheckedIOException(ex);
+            }
+        }
+
+        return 20;
     }
 
 
@@ -531,17 +793,29 @@ public final class OrderSubmitDecoder
             builder.append((char)this.symbol(i));
         }
         builder.append('|');
+        builder.append("dealtCcy=");
+        for (int i = 0; i < dealtCcyLength() && this.dealtCcy(i) > 0; i++)
+        {
+            builder.append((char)this.dealtCcy(i));
+        }
+        builder.append('|');
         builder.append("side=");
         builder.append(this.side());
         builder.append('|');
         builder.append("qty=");
         builder.append(this.qty());
         builder.append('|');
-        builder.append("price=");
-        builder.append(this.price());
+        builder.append("valueDate=");
+        for (int i = 0; i < valueDateLength() && this.valueDate(i) > 0; i++)
+        {
+            builder.append((char)this.valueDate(i));
+        }
         builder.append('|');
-        builder.append("orderType=");
-        builder.append(this.orderType());
+        builder.append("user=");
+        for (int i = 0; i < userLength() && this.user(i) > 0; i++)
+        {
+            builder.append((char)this.user(i));
+        }
 
         limit(originalLimit);
 
