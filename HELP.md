@@ -1,20 +1,28 @@
 # Read Me First
-The following was discovered as part of building this project:
-
-* The original package name 'com.vijay.matching-clients' is invalid and this project uses 'com.vijay.matching_clients' instead.
+This is a simple aggregator/matching engine for FX. Unlike equities FX matching will be on more parameters.
+Although the design/data structures follows the equity model, the logic is customized for FX products.
 
 # Getting Started
+This is a basic spring boot project. Order publishers and aggregation/matching are from the same process.
+There is a rest endpoint, exposed in swagger ui. (http://localhost:8080/swagger-ui/index.html).
+Checking out the project into an IDE like eclipse/Intellij should be enough to get started
 
-### Reference Documentation
-For further reference, please consider the following sections:
+# Design principles
+Simple event source model is used. Events are published/subscribed over channels.
+Clients publish order events over order intake or through rest api endpoints and subscribe for executions.
+Matching engine subscribed for order/match requests and responds with executions.
+Use IPC as messaging medium since everything is contained in a single JVM.
+Can be extended to use udp multicast to support multiple microservices with an event sequencer with 
+support of passive/hot replicated instances for failovers. 
 
-* [Official Gradle documentation](https://docs.gradle.org)
-* [Spring Boot Gradle Plugin Reference Guide](https://docs.spring.io/spring-boot/3.4.4/gradle-plugin)
-* [Create an OCI image](https://docs.spring.io/spring-boot/3.4.4/gradle-plugin/packaging-oci-image.html)
-* [Spring Boot DevTools](https://docs.spring.io/spring-boot/3.4.4/reference/using/devtools.html)
+ConcurrentSkipListMap and ConcurrentLinkedDeque is used for storing orders. 
+They are readily available for quick implementations. Need high performing custom tree data structure with linked orders
+for scaling purposes.
 
-### Additional Links
-These additional references should also help you:
-
-* [Gradle Build Scans – insights for your project's build](https://scans.gradle.com#gradle)
+# Tech Stack
+JDK17, Spring Boot - fast application buildup
+Aeron - for messaging between services. IPC is used here, but can be expanded to udp multicast or other custom message delivery strategies. 
+Simple Binary Encoding - encoding/decoding messages, helps in off heap memory model and reduced GC
+Swagger-ui - exposes rest api endpoints in a nice GUI
+Mokito - for unit tests
 
